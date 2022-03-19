@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    #wheather_data {
+      display: flex;
+    }
+    #weather_div {
+      margin-left: 50px;
+      margin-right: 300px;
+      margin-top: 60px;
+      font-size: 20px;
+      /* height: 200px; */
+      /* border: 1px solid black; */
+      color: white;
+    }
+    body {
+      background-image: url("https://images.squarespace-cdn.com/content/v1/5beb0a44f2e6b1113f9519d9/1595177517570-FVH43RBQKF972HKDZO85/Best+caption+for+sunset.jpg");
+      background-repeat: no-repeat;
+      background-size: 100%;
+      height: 100%;
+    }
+    #input_div {
+      margin: auto;
+      margin-top: 50px;
+      width: 30%;
+    }
+    input {
+      width: 70%;
+      height: 25px;
+    }
+    #map_div {
+      margin-top: 50px;
+    }
+    img {
+      height: 65px;
+    }
+    #sevenDays {
+      display: flex;
+      width: 50%;
+      margin: auto;
+      margin-top: 20px;
+    }
+    #seven_div {
+      margin-right: 20px;
+      background-color: black;
+      color: white;
+      border-radius: 10px;
+      /* display: grid; */
+      /* align-items: center; */
+      padding: 5px;
+    }
+  </style>
+
+  <body>
+    <div id="input_div">
+      <input type="text" id="city" />
+      <button onclick="getWheather(), sevenDaysWheather()">Submit</button>
+    </div>
+    <div>
+      <div id="sevenDays"></div>
+      <div id="wheather_data"></div>
+    </div>
+  </body>
+</html>
+
+<script>
+  async function getWheather() {
+    try {
+      let city = document.querySelector("#city").value;
+      let response = await fetch(
+        `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=40d5cbdf1f24205c472cc7bf8570c782&units=metric`
+      );
+      let data = await response.json();
+      // console.log(data);
+      appendWheather(data);
+      showmap(city);
+    } catch (er) {
+      console.log(er);
+    }
+  }
+
+  async function sevenDaysWheather() {
+    try {
+      let city = document.querySelector("#city").value;
+      let response = await fetch(
+        `https://api.openweathermap.org/data/2.5/forecast?q=${city}&cnt=7&appid=40d5cbdf1f24205c472cc7bf8570c782&units=metric`
+      );
+      let data = await response.json();
+      // console.log(data);
+      appendSevenDays(data);
+    } catch (er) {
+      console.log(er);
+    }
+  }
+
+  function appendSevenDays(data) {
+    document.querySelector("#sevenDays").innerHTML = "";
+    data.list.map(function (ele) {
+      let div = document.createElement("div");
+      div.setAttribute("id", "seven_div");
+
+      let image = document.createElement("img");
+      image.src = "https://ssl.gstatic.com/onebox/weather/48/partly_cloudy.png";
+
+      let temp = document.createElement("p");
+      temp.textContent = ele.main.temp + " °";
+      // console.log(temp);
+
+      div.append(image, temp);
+      document.querySelector("#sevenDays").append(div);
+    });
+  }
+
+  function appendWheather(data) {
+    document.querySelector("#wheather_data").innerHTML = "";
+    let div = document.createElement("div");
+    div.setAttribute("id", "weather_div");
+
+    let city = document.querySelector("#city").value;
+    let h1 = document.createElement("h1");
+    h1.textContent = city;
+
+    let temp = document.createElement("p");
+    temp.textContent = "Temp:- " + data.main.temp + "°";
+
+    let min_temp = document.createElement("p");
+    min_temp.textContent = "Min Temp:- " + data.main.temp_min;
+
+    let max_temp = document.createElement("p");
+    max_temp.textContent = "Max Temp:- " + data.main.temp_max;
+
+    let wind = document.createElement("p");
+    wind.textContent = "Wind:- " + data.wind.speed;
+
+    let sunrise = document.createElement("p");
+    sunrise.textContent = "Sunrise:- " + data.sys.sunrise;
+
+    let sunset = document.createElement("p");
+    sunset.textContent = "Sunset:- " + data.sys.sunset;
+
+    let image = document.createElement("img");
+    image.src = "https://ssl.gstatic.com/onebox/weather/48/sunny_s_cloudy.png";
+
+    let pressure = document.createElement("p");
+    pressure.textContent = "Pressure:-" + data.main.pressure;
+
+    let humidity = document.createElement("p");
+    humidity.textContent = "Humidity:- " + data.main.humidity;
+    div.append(
+      image,
+      h1,
+      temp,
+      pressure,
+      humidity,
+      min_temp,
+      max_temp,
+      wind,
+      sunrise,
+      sunset
+    );
+    document.querySelector("#wheather_data").append(div);
+  }
+
+  function showmap(city) {
+    let div = document.createElement("div");
+    div.setAttribute("id", "map_div");
+    div.innerHTML = `<iframe width="600" height="500" id="gmap_canvas"
+            src="https://maps.google.com/maps?q=${city}&t=&z=9&ie=UTF8&iwloc=&output=embed" frameborder="0"
+            scrolling="no" marginheight="0" marginwidth="0"></iframe><a href="https://fmovies-online.net"></a><br>`;
+
+    document.querySelector("#wheather_data").append(div);
+  }
+</script>
